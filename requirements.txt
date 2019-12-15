@@ -1,2 +1,2 @@
-astropy==2.0.5
-sep==1.0
+astropy==3.2.3
+hstcal==2.3.1
