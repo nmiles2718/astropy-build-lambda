@@ -7,7 +7,6 @@ import boto3
 from fits_handler import FitsHandler
 
 
-
 def download_file(event):
     fname = event['fits_s3_key']
     bucket_name = event['fits_s3_bucket']
@@ -47,12 +46,20 @@ def process_event(event):
             units = 'unknown'
     med = 0
     for chip in [fitsobj.chip1, fitsobj.chip2]:
-        _, chip_med, _ = sigma_clipped_stats(
-            chip['sci'][chip['dq']==0],
-            sigma=5,
-            maxiters=5
-        )
-        med += chip_med
+        if chip['dq'] is not None:
+            _, chip_med, _ = sigma_clipped_stats(
+                chip['sci'][chip['dq']==0],
+                sigma=5,
+                maxiters=5
+            )
+        else:
+            _, chip_med, _ = sigma_clipped_stats(
+                chip['sci'],
+                sigma=5,
+                maxiters=5
+            )
+
+            med += chip_med
 
     avg_bkg = med/2.0
     metadata[f"bkg_{units}"] = [avg_bkg]
