@@ -28,10 +28,15 @@ strip_virtualenv () {
     # TODO: It breaks astropy if you remove its 'tests' folder. Figure out
     # how to gracefully skip this directory (my bash-foo) isn't up to it.
 
+    tar -cvf "$VIRTUAL_ENV/lib64/python3.6/site-packages/astropy.tar" "$VIRTUAL_ENV/lib64/python3.6/site-packages/astropy"
+    rm -rf "$VIRTUAL_ENV/lib64/python3.6/site-packages/astropy"
 
     # Clean up tests
     find $VIRTUAL_ENV -name "tests" -type d -prune -exec rm -rf {} \;
     echo "venv stripped size $(du -sh $VIRTUAL_ENV | cut -f1)"
+
+    tar -xvf "$VIRTUAL_ENV/lib64/python3.6/site-packages/astropy.tar"
+    rm -rf "$VIRTUAL_ENV/lib64/python3.6/site-packages/astropy.tar"
 
 
     echo "venv original size $(du -sh $VIRTUAL_ENV | cut -f1)"

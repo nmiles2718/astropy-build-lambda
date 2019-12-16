@@ -1,7 +1,5 @@
 import logging
-
 from astropy.io import fits
-import numpy as np
 
 
 logging.basicConfig(format='%(levelname)-4s '
