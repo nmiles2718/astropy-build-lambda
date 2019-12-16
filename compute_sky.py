@@ -28,7 +28,7 @@ def get_image_metadata(fitsobj):
     metadata = {}
     keys = ['targname', 'exptime', 'filter1','filter2', 'expstart']
     for key in keys:
-        metadata[key] = fitsobj.prhdr[key]
+        metadata[key] = [fitsobj.prhdr[key]]
     return metadata
 
 def process_event(event):
@@ -49,7 +49,7 @@ def process_event(event):
         med += chip_med
 
     avg_bkg = med/2.0
-    metadata[f"bkg_{units}"] = avg_bkg
+    metadata[f"bkg_{units}"] = [avg_bkg]
     tb = Table(metadata)
     tb.write(f"/tmp/{basename}_sky.dat", format='ascii')
 
