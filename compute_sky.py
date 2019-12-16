@@ -46,6 +46,9 @@ def process_event(event):
             units = 'unknown'
     med = 0
     for chip in [fitsobj.chip1, fitsobj.chip2]:
+        if chip['sci'] is None:
+            continue
+
         if chip['dq'] is not None:
             _, chip_med, _ = sigma_clipped_stats(
                 chip['sci'][chip['dq']==0],
@@ -59,7 +62,7 @@ def process_event(event):
                 maxiters=5
             )
 
-            med += chip_med
+        med += chip_med
 
     avg_bkg = med/2.0
     metadata[f"bkg_{units}"] = [avg_bkg]
