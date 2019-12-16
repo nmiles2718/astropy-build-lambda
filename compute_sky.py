@@ -56,7 +56,7 @@ def process_event(event):
     s3 = boto3.resource('s3')
     s3.meta.client.upload_file(f"/tmp/{basename}_sky.dat",
                                event['s3_output_bucket'],
-                               f"/results/{basename}_sky.dat")
+                               f"results/{basename}_sky.dat")
 
 
 
