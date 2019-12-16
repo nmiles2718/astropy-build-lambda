@@ -18,11 +18,10 @@ def download_file(event):
     bkt = s3.Bucket(bucket_name)
     bkt.download_file(
         fname,
-        f"/tmp/{fname}",
+        f"/tmp/{fname.split('/')[-1]}",
         ExtraArgs={"RequestPayer": "requester"}
     )
-
-    return f"/tmp/{fname}"
+    return f"/tmp/{fname.split('/')[-1]}"
 
 def get_image_metadata(fitsobj):
     metadata = {}
@@ -33,7 +32,7 @@ def get_image_metadata(fitsobj):
 
 def process_event(event):
     fname = download_file(event)
-    basename = fname.split('/')[-1].split('_')[0]
+    basename = fname.split('_')[0]
     fitsobj = FitsHandler(fname=fname)
     fitsobj.get_data(ext='sci')
     fitsobj.get_data(ext='dq')
