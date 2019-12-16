@@ -1,14 +1,11 @@
 #!/usr/bin/env python
-
-
-import glob
+import os
 
 from astropy.table import Table
-from astropy.io import fits
 from astropy.stats import sigma_clipped_stats
-from fits_handler import FitsHandler
-# from acstools import calacs
 import boto3
+from fits_handler import FitsHandler
+
 
 
 def download_file(event):
@@ -18,10 +15,10 @@ def download_file(event):
     bkt = s3.Bucket(bucket_name)
     bkt.download_file(
         fname,
-        f"/tmp/{fname.split('/')[-1]}",
+        f"/tmp/{os.path.basename(fname)}",
         ExtraArgs={"RequestPayer": "requester"}
     )
-    return f"/tmp/{fname.split('/')[-1]}"
+    return f"/tmp/{os.path.basename(fname)}"
 
 def get_image_metadata(fitsobj):
     metadata = {}
@@ -32,7 +29,7 @@ def get_image_metadata(fitsobj):
 
 def process_event(event):
     fname = download_file(event)
-    basename = fname.split('_')[0]
+    basename = os.path.basename(fname).split('_')[0]
     fitsobj = FitsHandler(fname=fname)
     fitsobj.get_data(ext='sci')
     fitsobj.get_data(ext='dq')
