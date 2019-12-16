@@ -22,9 +22,13 @@ def download_file(event):
 
 def get_image_metadata(fitsobj):
     metadata = {}
-    keys = ['targname', 'exptime', 'filter1','filter2', 'expstart']
+    keys = ['targname', 'exptime', 'filter1','filter2', 'expstart', 'aperture']
     for key in keys:
-        metadata[key] = [fitsobj.prhdr[key]]
+        if key == 'filter1' and 'clear' not in fitsobj.prhdr[key].lower():
+            metadata['filter'] = [fitsobj.prhdr[key]]
+        elif key == 'filter2' and 'clear' not in fitsobj.prhdr[key].lower():
+            metadata['filter'] = [fitsobj.prhdr[key]]
+
     return metadata
 
 def process_event(event):
@@ -34,7 +38,13 @@ def process_event(event):
     fitsobj.get_data(ext='sci')
     fitsobj.get_data(ext='dq')
     metadata = get_image_metadata(fitsobj)
-    units = fitsobj.chip1['sci1_hdr']['BUNIT']
+    try:
+        units = fitsobj.chip1['sci1_hdr']['BUNIT']
+    except KeyError as e:
+        try:
+            units = fitsobj.chip1['sci2_hdr']['BUNIT']
+        except KeyError as e:
+            units = 'unknown'
     med = 0
     for chip in [fitsobj.chip1, fitsobj.chip2]:
         _, chip_med, _ = sigma_clipped_stats(

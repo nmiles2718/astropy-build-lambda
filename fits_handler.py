@@ -106,7 +106,7 @@ class FitsHandler(object):
                     ext_data = hdu[ext_idx].data
                 except KeyError:
                     LOG.info(
-                        '{1} is missing for {0}'.format(self._fname, ext1))
+                        '{} is missing for {}'.format(ext_tuple, self._fname))
                 else:
                     chip[ext] = ext_data
                     chip[f"{ext}{i}_hdr"] = hdu[ext_idx].header
