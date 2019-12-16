@@ -43,10 +43,10 @@ strip_virtualenv () {
     find $VIRTUAL_ENV/lib64/python3.6/site-packages/ -name "*.so" | xargs strip
     echo "venv stripped size $(du -sh $VIRTUAL_ENV | cut -f1)"
 
-    cp /outputs/process.py $VIRTUAL_ENV
+    cp -v /outputs/*.py $VIRTUAL_ENV
 
-    pushd $VIRTUAL_ENV && zip -r -9 -q /tmp/process.zip process.py ; popd
-    pushd $VIRTUAL_ENV/lib/python3.6/site-packages/ && zip -r -9 --out /tmp/partial-venv.zip -q /tmp/process.zip * ; popd
+    pushd $VIRTUAL_ENV && zip -r -9 -q /tmp/compute_sky.zip *py ; popd
+    pushd $VIRTUAL_ENV/lib/python3.6/site-packages/ && zip -r -9 --out /tmp/partial-venv.zip -q /tmp/compute_sky.zip * ; popd
     pushd $VIRTUAL_ENV/lib64/python3.6/site-packages/ && zip -r -9 --out /outputs/venv.zip -q /tmp/partial-venv.zip * ; popd
     echo "site-packages compressed size $(du -sh /outputs/venv.zip | cut -f1)"
 

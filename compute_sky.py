@@ -15,7 +15,7 @@ def download_file(event):
     fname = event['fits_s3_key']
     bucket_name = event['fits_s3_bucket']
 
-    session = boto3.session(profile_name='ndmiles_admin')
+    session = boto3.Session(profile_name='ndmiles_admin')
     client = session.client('s3', region_name='us-east-1')
     client.download_file(bucket_name, fname, f"/tmp/{fname}" )
 
@@ -50,14 +50,13 @@ def process_event(event):
     tb = Table(metadata)
     tb.write(f"/tmp/{basename}_sky.dat", format='ascii')
 
-    session = boto3.session(profile_name='ndmiles_admin')
+    session = boto3.Session(profile_name='ndmiles_admin')
     client = session.client('s3', region_name='us-east-1')
     client.upload_file(
         f"/tmp/{basename}_sky.dat",
         event['s3_output_bucket'],
         f"/results/{basename}_sky.dat"
     )
-
 
 
 def handler(event, context):
