@@ -27,7 +27,7 @@ def get_image_metadata(fitsobj):
             metadata['filter'] = [fitsobj.prhdr[key]]
         elif key == 'filter2' and 'clear' not in fitsobj.prhdr[key].lower():
             metadata['filter'] = [fitsobj.prhdr[key]]
-        else:
+        elif key != 'filter1' and key != 'filter2':
             metadata[key] = [fitsobj.prhdr[key]]
     return metadata
 
