@@ -1,5 +1,6 @@
 # Import astroquery.mast (http://astroquery.readthedocs.io/en/latest/mast/mast.html)
 # Note, you may need to build from source to access the HST data on AWS.
+import argparse
 import time
 
 from astroquery.mast import Observations
@@ -9,12 +10,18 @@ import generate_catalog
 import json
 
 
+parser = argparse.ArgumentParser()
+parser.add_argument('-catalog',
+                    default=None,
+                    help='catalog of files to process')
+
 
 def find_and_process(
         obs_collection='HST',
         dataproduct_type = ('image'),
         instrument_name= 'ACS/WFC',
-        filters='F814W'
+        filters='F814W',
+        N=100
 ):
     # Use AWS S3 URLs for the MAST records (rather than the ones at http://mast.stsci.edu)
     Observations.enable_cloud_dataset(profile='ndmiles_admin')
@@ -30,7 +37,7 @@ def find_and_process(
 
     # Grab 100 products:
     # http://astroquery.readthedocs.io/en/latest/mast/mast.html#getting-product-lists
-    products = Observations.get_product_list(obsTable['obsid'])
+    products = Observations.get_product_list(obsTable['obsid'][:N])
 
     # Filter out just the drizzled FITS files
     filtered_products = Observations.filter_products(products,
@@ -91,3 +98,9 @@ def process_catalog(catalog_name):
     dask.compute(*delayed_objs, scheduler='threads', num_workers=2)
     et = time.time()
     print(f"Duration: {et - st:0.2f}")
+
+if __name__ == "__main__":
+    args = parser.parse_args()
+    args = vars(args)
+    if args['catalog'] is not None:
+        process_catalog(**args)
