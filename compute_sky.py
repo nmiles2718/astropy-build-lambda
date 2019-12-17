@@ -30,6 +30,11 @@ def get_image_metadata(fitsobj):
 
     return metadata
 
+def clean_up(img, output):
+    os.remove(img)
+    os.remove(output)
+
+
 def process_event(event):
     fname = download_file(event)
     basename = os.path.basename(fname).split('_')[0]
@@ -73,6 +78,12 @@ def process_event(event):
     s3.meta.client.upload_file(f"/tmp/{basename}_sky.dat",
                                event['s3_output_bucket'],
                                f"results/{basename}_sky.dat")
+
+
+    # Now we delete the file we downloaded to ensure if memory is persisted
+    # between Lambdas, we won't fill up our disk space.
+    # https://stackoverflow.com/questions/48347350/aws-lambda-no-space-left-on-device-error
+    clean_up(fname, f"/tmp/{basename}_sky.dat")
 
 
 

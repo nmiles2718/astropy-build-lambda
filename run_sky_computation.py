@@ -6,7 +6,6 @@ import time
 from astroquery.mast import Observations
 import boto3
 import dask
-import generate_catalog
 import json
 
 
